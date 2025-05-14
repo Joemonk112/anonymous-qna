@@ -1,1 +1,230 @@
-# anonymous-qna
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anonymous Q&A</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #ff007a, #ffa500);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding-top: 40px;
+    }
+
+    .profile-card {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      margin-bottom: 20px;
+      text-align: left;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin-right: 20px;
+      border: 2px solid white;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-info {
+      flex-grow: 1;
+    }
+
+    .profile-card strong {
+      font-size: 1.1em;
+      display: block;
+      color: #222;
+    }
+
+    .header {
+      font-size: 1.2em;
+      color: #222;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .lock {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #444;
+    }
+
+    form {
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    form input {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 20px;
+      font-size: 1em;
+      outline: none;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .textarea-wrapper textarea {
+      width: 100%;
+      padding: 15px;
+      padding-right: 40px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 20px;
+      font-size: 1em;
+      outline: none;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .textarea-wrapper .dice {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      font-size: 1.3em;
+      cursor: pointer;
+      z-index: 2;
+      user-select: none;
+    }
+
+    form button {
+      width: 100%;
+      background-color: black;
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 40px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .info-text {
+      color: white;
+      margin: 20px 0 10px;
+      font-size: 0.95em;
+      text-align: center;
+    }
+
+    .secondary-btn {
+      background-color: black;
+      color: white;
+      padding: 15px;
+      display: inline-block;
+      border-radius: 40px;
+      font-size: 1em;
+      text-decoration: none;
+    }
+
+    .success-message {
+      display: none;
+      background-color: white;
+      color: black;
+      padding: 20px;
+      border-radius: 20px;
+      text-align: center;
+      font-weight: bold;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="profile-card">
+    <img src="abs.jpg" alt="Profile Photo" class="profile-img">
+    <div class="profile-info">
+      <strong>@Shi_Atsui</strong>
+      <div class="header">send me anonymous messages...</div>
+      <div class="lock">🔒 anonymous q&a</div>
+    </div>
+  </div>
+
+  <form id="messageForm">
+    <input type="text" name="name" placeholder="Name" required>
+    <div class="textarea-wrapper">
+      <textarea name="message" placeholder="Type your message..." rows="4" required></textarea>
+      <span class="dice" onclick="insertRandomMessage()">🎲</span>
+    </div>
+    <button type="submit">Send!</button>
+  </form>
+
+  <div class="info-text">👇 301 people just tapped the button 👇</div>
+  <a href="#" class="secondary-btn">Get your own messages!</a>
+  <div class="success-message" id="successMsg">Thank you! Message sent anonymously!</div>
+
+  <script>
+    const form = document.getElementById("messageForm");
+    const successMsg = document.getElementById("successMsg");
+    const textarea = document.querySelector("textarea");
+
+    const randomMessages = [
+      "What’s your biggest dream?",
+      "If you could time travel, where would you go?",
+      "What’s something you’ve never told anyone?",
+      "What’s your guilty pleasure?",
+      "Who do you secretly admire?",
+      "What's the best compliment you’ve ever received?",
+      "If you had one superpower, what would it be?",
+      "Tell me a fun secret about you!"
+    ];
+
+    function insertRandomMessage() {
+      const random = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+      textarea.value = random;
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+
+      fetch("https://formspree.io/f/mbloqrdk", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json"
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            form.reset();
+            successMsg.style.display = "block";
+            setTimeout(() => {
+              successMsg.style.display = "none";
+            }, 3000);
+          } else {
+            alert("Oops! Something went wrong.");
+          }
+        });
+    });
+  </script>
+
+</body>
+
+</html>
